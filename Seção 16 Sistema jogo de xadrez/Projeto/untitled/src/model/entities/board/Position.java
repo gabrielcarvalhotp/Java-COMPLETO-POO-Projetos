@@ -1,4 +1,4 @@
-package model.entities.boardLayer;
+package model.entities.board;
 
 public class Position {
 

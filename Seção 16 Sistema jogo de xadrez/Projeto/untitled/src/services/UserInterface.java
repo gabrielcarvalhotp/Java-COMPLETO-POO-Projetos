@@ -1,6 +1,6 @@
 package services;
 
-import model.entities.chessLayer.ChessPiece;
+import model.entities.chess.ChessPiece;
 
 public class UserInterface {
 

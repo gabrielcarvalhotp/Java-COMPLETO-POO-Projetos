@@ -1,7 +1,7 @@
-package model.entities.chessLayer;
+package model.entities.chess;
 
-import model.entities.boardLayer.Board;
-import model.entities.boardLayer.Piece;
+import model.entities.board.Board;
+import model.entities.board.Piece;
 import model.enums.Color;
 
 public class ChessPiece extends Piece {

@@ -1,6 +1,10 @@
-package model.entities.chessLayer;
+package model.entities.chess;
 
-import model.entities.boardLayer.Board;
+import model.entities.board.Board;
+import model.entities.board.Position;
+import model.entities.chess.pieces.King;
+import model.entities.chess.pieces.Rook;
+import model.enums.Color;
 
 public class ChessMatch {
 
@@ -8,6 +12,7 @@ public class ChessMatch {
 
     public ChessMatch() {
         board = new Board(8, 8);
+        initialSetup();
     }
 
     public ChessPiece[][] getPieces() {
@@ -19,5 +24,10 @@ public class ChessMatch {
             }
         }
         return chessPieces;
+    }
+
+    private void initialSetup() {
+        board.placePiece(new King(board, Color.BLACK), new Position(2, 0));
+        board.placePiece(new Rook(board, Color.WHITE), new Position(2, 1));
     }
 }

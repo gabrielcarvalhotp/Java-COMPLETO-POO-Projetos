@@ -1,4 +1,4 @@
-import model.entities.chessLayer.ChessMatch;
+import model.entities.chess.ChessMatch;
 import services.UserInterface;
 
 public class Main {
