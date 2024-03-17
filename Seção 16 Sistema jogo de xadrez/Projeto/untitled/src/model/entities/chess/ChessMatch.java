@@ -1,7 +1,9 @@
 package model.entities.chess;
 
 import model.entities.board.Board;
+import model.entities.board.Piece;
 import model.entities.board.Position;
+import model.entities.chess.exeptions.ChessExeption;
 import model.entities.chess.pieces.King;
 import model.entities.chess.pieces.Rook;
 import model.enums.Color;
@@ -26,8 +28,34 @@ public class ChessMatch {
         return chessPieces;
     }
 
+    private void placePiece(ChessPiece chessPiece, int row, char column) {
+        board.placePiece(chessPiece, new ChessPosition(row, column).toPosition());
+    }
+
+    public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
+        validadeSourcePosition(sourcePosition.toPosition());
+        Piece piece = makeMove(sourcePosition.toPosition(), targetPosition.toPosition());
+        return (ChessPiece) piece;
+    }
+
+    private void validadeSourcePosition(Position position) {
+        if (!board.thereIsAPiece(position)) {
+            throw new ChessExeption("There is no piece on source position");
+        }
+    }
+
+    private Piece makeMove(Position source, Position target) {
+        Piece removedPiece = board.removePiece(source);
+        Piece capturedPiece = board.removePiece(target);
+        board.placePiece(removedPiece, target);
+        return  capturedPiece;
+    }
+
     private void initialSetup() {
-        board.placePiece(new King(board, Color.BLACK), new Position(2, 0));
-        board.placePiece(new Rook(board, Color.WHITE), new Position(2, 1));
+        placePiece(new King(board, Color.WHITE),1, 'a');
+        placePiece(new Rook(board, Color.WHITE), 1,'b');
+
+        placePiece(new King(board, Color.WHITE),8, 'a');
+        placePiece(new Rook(board, Color.WHITE), 8,'b');
     }
 }
