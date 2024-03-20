@@ -2,10 +2,10 @@ package model.entities.chess;
 
 import model.entities.board.Board;
 import model.entities.board.Piece;
+import model.entities.board.Position;
 import model.enums.Color;
 
-public class ChessPiece extends Piece {
-
+public abstract class ChessPiece extends Piece {
     private final Color color;
 
     public ChessPiece(Board board, Color color) {
@@ -15,5 +15,10 @@ public class ChessPiece extends Piece {
 
     public Color getColor() {
         return color;
+    }
+
+    protected boolean isThereOpponentPiece(Position position) {
+        ChessPiece piece = (ChessPiece) getBoard().piece(position);
+        return piece != null && piece.getColor() != color;
     }
 }
