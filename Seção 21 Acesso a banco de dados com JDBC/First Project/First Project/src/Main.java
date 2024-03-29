@@ -1,0 +1,31 @@
+import db.DB;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class Main {
+    public static void main(String[] args) {
+        Connection connection;
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DB.getConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from department");
+
+            while (resultSet.next()) {
+                System.out.println(resultSet.getInt("Id") + ", " + resultSet.getString("Name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DB.closeConnection();
+            DB.closeStatement(statement);
+            DB.closeResultSet(resultSet);
+        }
+
+    }
+}
