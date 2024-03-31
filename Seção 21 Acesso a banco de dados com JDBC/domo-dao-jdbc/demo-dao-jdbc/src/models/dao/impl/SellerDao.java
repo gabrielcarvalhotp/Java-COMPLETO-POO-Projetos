@@ -6,10 +6,7 @@ import models.dao.Dao;
 import models.entities.Departament;
 import models.entities.Seller;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +20,37 @@ public class SellerDao implements Dao<Seller> {
 
     @Override
     public void insert(Seller obj) {
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = connection.prepareStatement(
+                    " INSERT INTO `coursejdbc`.`seller` " +
+                            "(`Id`, `Name`, `Email`, `BirthDate`, `BaseSalary`, `DepartmentId`) " +
+                            "VALUES " +
+                            " (?, ?, ?, ?, ?, ?, ?); ",
+                    Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, obj.getId());
+            preparedStatement.setString(2, obj.getName());
+            preparedStatement.setString(3, obj.getEmail());
+            preparedStatement.setDate(4 ,new java.sql.Date(obj.getBirthDate().getTime()));
+            preparedStatement.setInt(5 ,obj.getDepartament().getId());
 
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new DBException("Unexpected error! no rows affected");
+            }
+
+            resultSet = preparedStatement.getGeneratedKeys();
+            resultSet.next();
+            obj.setId(resultSet.getInt(1));
+
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeStatement(preparedStatement);
+            DB.closeResultSet(resultSet);
+        }
     }
 
     @Override
@@ -61,7 +88,28 @@ public class SellerDao implements Dao<Seller> {
 
     @Override
     public List<Seller> findAll() {
-        return null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<Seller> sellerList = new ArrayList<>();
+        try {
+            preparedStatement = connection.prepareStatement(
+                    "SELECT seller.*, department.Name as DepartmentName \n" +
+                            "FROM seller \n" +
+                            "INNER JOIN department ON department.Id = seller.DepartmentId "
+            );
+
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            while (resultSet.next()) {
+                sellerList.add(instantiateSeller(resultSet));
+            }
+            return sellerList;
+        } catch (SQLException e) {
+            throw new DBException(e.getMessage());
+        } finally {
+            DB.closeStatement(preparedStatement);
+            DB.closeResultSet(resultSet);
+        }
     }
 
     @Override
