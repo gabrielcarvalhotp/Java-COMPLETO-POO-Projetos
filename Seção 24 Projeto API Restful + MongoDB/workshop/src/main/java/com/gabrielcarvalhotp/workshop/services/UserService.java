@@ -1,8 +1,9 @@
 package com.gabrielcarvalhotp.workshop.services;
 
-import com.gabrielcarvalhotp.workshop.domain.User;
-import com.gabrielcarvalhotp.workshop.dto.UserDTO;
+import com.gabrielcarvalhotp.workshop.domains.users.User;
+import com.gabrielcarvalhotp.workshop.domains.users.UserDTO;
 import com.gabrielcarvalhotp.workshop.repositories.UserRepository;
+import com.gabrielcarvalhotp.workshop.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,49 +11,30 @@ import java.util.List;
 
 @Service
 public class UserService {
-
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
 
     public List<User> findAll() {
-        return repository.findAll();
+        return userRepository.findAll();
     }
 
     public User findById(String id) {
-        User user = null;
-        try {
-           user  = repository.findById(id).get();
-        } catch (RuntimeException exception) {
-            exception.printStackTrace();
-        }
-        return user;
+        return userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("User not found with id: " + id));
     }
 
-    public User insert(User user) {
-        return repository.insert(user);
+    public User createUser(UserDTO userDTO) {
+        User user = new User(null, userDTO.name(), userDTO.email());
+        return userRepository.insert(user);
     }
 
-    public User fromDTO(UserDTO userDTO) {
-        return new User(userDTO.getId(), userDTO.getName(), userDTO.getEmail());
+    public User updateUser(String id, UserDTO userDTO) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("User not found with id: " + id));
+        user.setName(userDTO.name());
+        user.setEmail(userDTO.email());
+        return userRepository.save(user);
     }
 
-    public void delete(String id) {
-        repository.delete(findById(id));
+    public void deleteById(String id) {
+        userRepository.deleteById(id);
     }
-
-    public void update(User user) {
-        repository.save(user);
-    }
-
-    public void update(User oldUser) {
-        User user = repository.findById(oldUser.getId()).get();
-        updateData(user, oldUser);
-        repository.save(user);
-    }
-
-    private void updateData(User source, User target) {
-        target.setName(source.getName());
-        target.setEmail(source.getEmail());
-    }
-
 }
